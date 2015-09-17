@@ -1,7 +1,10 @@
+
+
 package security;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 
@@ -52,7 +55,7 @@ public class BaseDaoTest {
 	 public void testSession(){
 		  System.out.println(sessionFactory==null);
 	 }
-	@Test
+	//@Test
 	 public void testBaseDao(){
 		  com.wsin.security.bean.Resource resource = new com.wsin.security.bean.Resource();
 		  resource.setId(UUIDUtils.getUUID());
@@ -121,5 +124,35 @@ public class BaseDaoTest {
 	 User user=  userServiceImpl.getUserById(userServiceImpl.getUserByUsername("admin").getId());
 	}
 	
+ 
+ @Test
+ public void testUrl(){
+	 com.wsin.security.bean.Resource resource = new com.wsin.security.bean.Resource();
+	    resource.setId(UUIDUtils.getUUID());
+	    resource.setContent("/show");
+	    resource.setName("show");
+	    resource.setStatus(1);
+	    resource.setType("url");
+	    resourceService.save(resource);
+	    
+	    Set< com.wsin.security.bean.Resource> res = new HashSet<com.wsin.security.bean.Resource>();
+	    res.add(resource);
+	 Authority au = new Authority();
+	 au.setId(UUIDUtils.getUUID());
+	 au.setAnthorityName("see");
+	 au.setCode("see");
+	 au.setStatus(1);
+	 au.setResources(res);
+	 Set<Authority> aus = new HashSet<Authority>();
+	 aus.add(au);
+	 Role rl = new Role();
+	 rl.setId(UUIDUtils.getUUID());
+	 rl.setRoleName("person");
+	 rl.setCode("person");
+	 rl.setStatus(1);
+	 rl.setAnthorities(aus);
+	 reRoleService.save(rl);
+	 
+ }
 
 }

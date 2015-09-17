@@ -4,14 +4,16 @@
              xmlns:context="http://www.springframework.org/schema/context"
              xmlns:aop="http://www.springframework.org/schema/aop"
              xmlns:tx="http://www.springframework.org/schema/tx"
+              xmlns:task="http://www.springframework.org/schema/task"
              xsi:schemaLocation="http://www.springframework.org/schema/beans
-                     http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+                     http://www.springframework.org/schema/beans/spring-beans.xsd
                      http://www.springframework.org/schema/context
                      http://www.springframework.org/schema/context/spring-context-4.1.xsd
                      http://www.springframework.org/schema/aop
                      http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
                      http://www.springframework.org/schema/tx
-                     http://www.springframework.org/schema/tx/spring-tx-4.1.xsd">
+                     http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+                     http://www.springframework.org/schema/task  http://www.springframework.org/schema/task/spring-task.xsd">
 
          <context:component-scan base-package="com.wsin"/>
          <context:annotation-config/>
@@ -28,6 +30,7 @@
   </bean>
   
   <!--SessionFactory Description --> 
+  <!--SessionFactory Description --> 
   <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
      <property name="dataSource" ref="dataSource" />
      <property name="packagesToScan">
@@ -39,6 +42,8 @@
          <props>
             <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
             <prop key="hibernate.show_sql">true</prop>
+            <!-- 设置使用线程-->
+   <!--  <prop key="hibernate.current_session_context_class">thread</prop> -->
             <prop key="hibernate.default_batch_fetch_size">10</prop>
             <prop key="hibernate.format_sql">true</prop>
             <prop key="hibernate.hbm2ddl.auto">update</prop>
@@ -66,6 +71,28 @@
          <tx:method name="*" read-only="true"/>
         </tx:attributes>
      </tx:advice>
-  
+     <!-- 1.全局异步 -->
+      <task:executor id="executor" pool-size="10" />  
+    <!-- 名字必须是applicationEventMulticaster和messageSource是一样的，默认找这个名字的对象 -->  
+    <!-- 名字必须是applicationEventMulticaster，因为AbstractApplicationContext默认找个 -->  
+    <!-- 如果找不到就new一个，但不是异步调用而是同步调用 -->  
+    <bean id="applicationEventMulticaster" class="org.springframework.context.event.SimpleApplicationEventMulticaster">  
+        <!-- 注入任务执行器 这样就实现了异步调用（缺点是全局的，要么全部异步，要么全部同步（删除这个属性即是同步））  -->  
+        <property name="taskExecutor" ref="executor"/>  
+    </bean>  
+    <!--  2.灵活异步-->
+        <!-- 开启@AspectJ AOP代理 -->  
+ <!--    <aop:aspectj-autoproxy proxy-target-class="true"/>   -->
+      
+    <!-- 任务调度器 -->  
+   <!--  <task:scheduler id="scheduler" pool-size="10"/>   -->
+      
+    <!-- 任务执行器 -->  
+   <!--  <task:executor id="executor" pool-size="10"/>   -->
+      
+    <!--开启注解调度支持 @Async @Scheduled  在方法上注解既是异步-->  
+   <!--  <task:annotation-driven executor="executor" scheduler="scheduler" proxy-target-class="true"/>   -->
 
+
+   
 </beans>

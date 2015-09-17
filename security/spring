@@ -1,3 +1,17 @@
 spring
    IOC  程序不应该依赖于实现而应该依赖于抽象接口
+   
+   
+   spring 任务调度  也可以使用注解
+   <!-- 如下实现是通过线程池执行的 -->
+     <task:executor id="executor" pool-size="10"/>
+    <task:scheduler id="scheduler" pool-size="10"/>
+    <task:annotation-driven scheduler="scheduler" executor="executor" proxy-target-class="true"/> -->
+
+    <task:scheduled-tasks scheduler="scheduler">
+        <!--自动清理删除的关系 每天2点执行执行 -->
+        <task:scheduled ref="relationClearTask" method="autoClearRelation" cron="0 0 2 * * ?"/>
+        <!--自动清理删除的关系 每天2点30执行-->
+        <task:scheduled ref="messageClearTask" method="autoClearExpiredOrDeletedmMessage" cron="0 30 2 * * ?"/>
+    </task:scheduled-tasks>
          
