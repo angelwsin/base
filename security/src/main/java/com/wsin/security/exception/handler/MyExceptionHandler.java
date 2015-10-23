@@ -17,7 +17,7 @@ import com.wsin.security.defexception.BusinessException;
  * @author angelwsin
  *
  */
-//@Component
+@Component
 public class MyExceptionHandler implements HandlerExceptionResolver{
 
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
@@ -26,7 +26,14 @@ public class MyExceptionHandler implements HandlerExceptionResolver{
 		      Map<String,Object>  model = new HashMap<String,Object>();
 		      model.put("ex", ex);
 		        if(ex instanceof BusinessException){
-		        	 return new ModelAndView("page/bussess", model);
+		        	try {
+		        		response.setContentType("text/html; charset=utf-8");
+						response.getWriter().write(ex.getMessage());
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		        	 return new ModelAndView();
 		        }else{
 		        	 return new ModelAndView("page/error", model);
 		        }
